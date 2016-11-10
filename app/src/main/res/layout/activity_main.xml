@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.google.firebase.codelab.friendlychat.MainActivity">
+    tools:context="com.google.firebase.codelab.friendlychat.activities.MainActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/messageRecyclerView"
@@ -24,6 +24,13 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/addButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="ADD"/>
 
         <EditText
             android:id="@+id/messageEditText"

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.firebase.codelab.friendlychat;
+package com.google.firebase.codelab.friendlychat.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -45,6 +45,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.codelab.friendlychat.R;
+import com.google.firebase.codelab.friendlychat.models.FriendlyMessage;
+import com.google.firebase.codelab.friendlychat.utilities.CodelabPreferences;
+import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
 
     private Button mSendButton;
+    private Button mAddButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private ProgressBar mProgressBar;
@@ -94,6 +99,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        FirebaseCrash.log("OnCreateMethod");
         // Set default username is anonymous.
         mUsername = ANONYMOUS;
 
@@ -207,11 +213,22 @@ public class MainActivity extends AppCompatActivity
                 mMessageEditText.setText("");
             }
         });
+
+
+        mAddButton = (Button) findViewById(R.id.addButton);
+        mAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, ContactsListActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        FirebaseCrash.log("OnStartMethod");
         // Check if user is signed in.
         // TODO: Add code to check if user is signed in.
     }
@@ -227,12 +244,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
+    public void onDestroy() {super.onDestroy();}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        FirebaseCrash.log("OnCreateOptionsMenu");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         return true;
@@ -258,5 +274,6 @@ public class MainActivity extends AppCompatActivity
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+        FirebaseCrash.report(new Exception("OnConnectionFailed: " + connectionResult));
     }
 }

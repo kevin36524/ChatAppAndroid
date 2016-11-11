@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.codelab.friendlychat.adapters.LaunchChatsAdapter;
-import com.google.firebase.codelab.friendlychat.models.Contact;
+import com.google.firebase.codelab.friendlychat.models.User;
 import com.google.firebase.codelab.friendlychat.models.FriendlyChats;
 import com.google.firebase.codelab.friendlychat.models.FriendlyMessage;
 
@@ -34,25 +34,25 @@ public class LaunchChatsActivity extends AppCompatActivity {
 
         List<FriendlyChats> myChats = new ArrayList<FriendlyChats>();
 
-        FriendlyChats chat1 = new FriendlyChats(new Contact(1, "Aditi Lonhari", "aditi@gmail.com"));
+        FriendlyChats chat1 = new FriendlyChats(new User("1", "Aditi Lonhari", "aditi@gmail.com", null));
         FriendlyMessage friendlyMessage1 = new FriendlyMessage();
         friendlyMessage1.setText("Hello there..");
         chat1.setChatToMessages(friendlyMessage1);
         myChats.add(chat1);
 
-        FriendlyChats chat2 = new FriendlyChats(new Contact(2, "Disha Satija", "disha@gmail.com"));
+        FriendlyChats chat2 = new FriendlyChats(new User("2", "Disha Satija", "disha@gmail.com", null));
         FriendlyMessage friendlyMessage2 = new FriendlyMessage();
         friendlyMessage2.setText("Yes, I saw that last night!");
         chat2.setChatToMessages(friendlyMessage2);
         myChats.add(chat2);
 
-        FriendlyChats chat3 = new FriendlyChats(new Contact(3, "Kevin Patel", "kevin@gmail.com"));
+        FriendlyChats chat3 = new FriendlyChats(new User("3", "Kevin Patel", "kevin@gmail.com", null));
         FriendlyMessage friendlyMessage3 = new FriendlyMessage();
         friendlyMessage3.setText("OMG! Seriously???");
         chat3.setChatToMessages(friendlyMessage3);
         myChats.add(chat3);
 
-        FriendlyChats chat4 = new FriendlyChats(new Contact(4, "Harshit", "harshit@gmail.com"));
+        FriendlyChats chat4 = new FriendlyChats(new User("4", "Harshit", "harshit@gmail.com", null));
         FriendlyMessage friendlyMessage4 = new FriendlyMessage();
         friendlyMessage4.setText("Let's meet at Codepath class at FB Bldg 20 Lobby2, 1 Facebook way.");
         chat4.setChatToMessages(friendlyMessage4);

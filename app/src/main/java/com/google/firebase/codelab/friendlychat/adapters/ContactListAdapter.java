@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.codelab.friendlychat.R;
-import com.google.firebase.codelab.friendlychat.models.Contact;
+import com.google.firebase.codelab.friendlychat.models.User;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.ViewHolder> {
 
-    private List<Contact> myContacts;
+    private List<User> myUsers;
     private Context mContext;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -47,13 +47,13 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
     @Override
     public void onBindViewHolder(ContactListAdapter.ViewHolder viewholder, int position) {
         Glide.with(mContext).load(R.drawable.ic_account_circle_black_36dp).into(viewholder.ivProfileImage);
-        viewholder.tvUsername.setText(myContacts.get(position).getName());
-        viewholder.tvEmail.setText(myContacts.get(position).getEmail());
+        viewholder.tvUsername.setText(myUsers.get(position).getName());
+        viewholder.tvEmail.setText(myUsers.get(position).getEmail());
     }
 
-    public ContactListAdapter(Context context, List<Contact> contacts){
+    public ContactListAdapter(Context context, List<User> users){
         mContext = context;
-        myContacts = contacts;
+        myUsers = users;
     }
 
     private Context getContext(){
@@ -62,7 +62,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
     @Override
     public int getItemCount() {
-        return myContacts.size();
+        return myUsers.size();
     }
 
 }

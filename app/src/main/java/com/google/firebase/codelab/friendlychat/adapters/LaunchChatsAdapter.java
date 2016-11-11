@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.codelab.friendlychat.activities.IndividualChatActivity;
-import com.google.firebase.codelab.friendlychat.models.Contact;
+import com.google.firebase.codelab.friendlychat.models.User;
 import com.google.firebase.codelab.friendlychat.models.FriendlyChats;
 
 import java.util.List;
@@ -30,7 +30,7 @@ public class LaunchChatsAdapter extends RecyclerView.Adapter<LaunchChatsAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private Contact mContact;// change to arraylist for groupchat
+        private User mUser;// change to arraylist for groupchat
         private FriendlyChats mFriendlyChats;
 
         private TextView tvChatContactName;
@@ -57,7 +57,7 @@ public class LaunchChatsAdapter extends RecyclerView.Adapter<LaunchChatsAdapter.
     @Override
     public void onBindViewHolder(LaunchChatsAdapter.ViewHolder viewholder, int position) {
         Glide.with(mContext).load(R.drawable.ic_account_circle_black_36dp).into(viewholder.civProfileImage);
-        viewholder.tvChatContactName.setText(myChats.get(position).getChatToContact().getName());
+        viewholder.tvChatContactName.setText(myChats.get(position).getChatToUser().getName());
         viewholder.tvChatTimestamp.setText("1-1-2017");
         viewholder.tvChatLastComment.setText(myChats.get(position).getChatToMessages().getText().toString());
 

@@ -6,19 +6,19 @@ package com.google.firebase.codelab.friendlychat.models;
 
 public class FriendlyChats {
 
-    public Contact getChatToContact() {
-        return chatToContact;
+    public User getChatToUser() {
+        return chatToUser;
     }
 
-    private Contact chatToContact; // change to arraylist for groupchat
+    private User chatToUser; // change to arraylist for groupchat
     private FriendlyMessage chatToMessages;
 
     public FriendlyChats(){
 
     }
 
-    public FriendlyChats(Contact contact){
-        this.chatToContact = contact;
+    public FriendlyChats(User user){
+        this.chatToUser = user;
     }
 
     public FriendlyMessage getChatToMessages() {

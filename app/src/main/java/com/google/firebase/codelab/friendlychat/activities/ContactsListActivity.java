@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.codelab.friendlychat.adapters.ContactListAdapter;
-import com.google.firebase.codelab.friendlychat.models.Contact;
+import com.google.firebase.codelab.friendlychat.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,17 +23,17 @@ public class ContactsListActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
-        List<Contact> myContacts = new ArrayList<Contact>();
+        List<User> myUsers = new ArrayList<User>();
 
-        myContacts.add(new Contact(1, "Aditi Lonhari", "aditi@gmail.com"));
-        myContacts.add(new Contact(2, "Disha Satija", "disha@gmail.com"));
-        myContacts.add(new Contact(3, "Kevin Patel", "kevin@gmail.com"));
-        myContacts.add(new Contact(4, "Harshit", "harshit@gmail.com"));
+        myUsers.add(new User("1", "Aditi Lonhari", "aditi@gmail.com", null));
+        myUsers.add(new User("2", "Disha Satija", "disha@gmail.com", null));
+        myUsers.add(new User("3", "Kevin Patel", "kevin@gmail.com", null));
+        myUsers.add(new User("4", "Harshit", "harshit@gmail.com", null));
 
 
 
-        Log.d("DEBUG contacts", myContacts.toString());
-        ContactListAdapter adapter = new ContactListAdapter(ContactsListActivity.this, myContacts);
+        Log.d("DEBUG contacts", myUsers.toString());
+        ContactListAdapter adapter = new ContactListAdapter(ContactsListActivity.this, myUsers);
         RecyclerView rvContactList = (RecyclerView) findViewById(R.id.rvContacts);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this));

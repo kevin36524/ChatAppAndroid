@@ -20,18 +20,18 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
-import com.google.firebase.codelab.friendlychat.activities.MainActivity;
+import com.google.firebase.codelab.friendlychat.activities.IndividualChatActivity;
 
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class MainActivityEspressoTest {
+public class IndividualChatActivityEspressoTest {
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityRule =
-            new ActivityTestRule<>(MainActivity.class);
+    public ActivityTestRule<IndividualChatActivity> mActivityRule =
+            new ActivityTestRule<>(IndividualChatActivity.class);
 
     // Add instrumentation test here
 }

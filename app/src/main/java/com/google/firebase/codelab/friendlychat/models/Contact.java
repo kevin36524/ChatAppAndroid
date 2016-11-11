@@ -9,6 +9,7 @@ public class Contact {
     public int id;
     public String name;
     public String email;
+    public String photoUrl;
 
     public Contact(int id, String name, String email){
         this.id = id;
@@ -26,6 +27,14 @@ public class Contact {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     public void setId(int id) {

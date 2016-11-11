@@ -1,23 +1,39 @@
 package com.google.firebase.codelab.friendlychat.models;
 
+import com.google.firebase.auth.FirebaseUser;
+
 /**
  * Created by aditi on 11/9/2016.
  */
 
-public class Contact {
+public class User {
 
-    public int id;
-    public String name;
     public String email;
+    public String name;
     public String photoUrl;
+    public String id;
 
-    public Contact(int id, String name, String email){
+    public User(String id, String name, String email, String photoUrl){
         this.id = id;
         this.name = name;
         this.email = email;
+        this.photoUrl = photoUrl;
     }
 
-    public int getId() {
+    public User() {
+    }
+
+    public User(FirebaseUser user) {
+        this.id = user.getUid();
+        this.name = user.getDisplayName();
+        this.email = user.getEmail();
+        this.photoUrl = "";
+        if (user.getPhotoUrl() != null) {
+            this.photoUrl = user.getPhotoUrl().toString();
+        }
+    }
+
+    public String getId() {
         return id;
     }
 
@@ -37,7 +53,7 @@ public class Contact {
         this.photoUrl = photoUrl;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

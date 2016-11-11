@@ -2,7 +2,6 @@ package com.google.firebase.codelab.friendlychat.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +40,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
     @Override
     public ContactListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View contactView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_contact, parent, false);
-        Log.d("DEBUG oncreate", "calledd");
         ViewHolder viewHolder = new ViewHolder(contactView);
         return viewHolder;
     }
@@ -56,7 +54,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
     public ContactListAdapter(Context context, List<Contact> contacts){
         mContext = context;
         myContacts = contacts;
-        Log.d("DEBUG contacts adap", myContacts.toString());
     }
 
     private Context getContext(){
@@ -65,7 +62,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
     @Override
     public int getItemCount() {
-        Log.d("DEBUG contacts size", String.valueOf(myContacts.size()));
         return myContacts.size();
     }
 

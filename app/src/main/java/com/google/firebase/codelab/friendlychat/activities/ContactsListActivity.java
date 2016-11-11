@@ -25,10 +25,10 @@ public class ContactsListActivity extends AppCompatActivity{
         setContentView(R.layout.activity_contacts);
         List<Contact> myContacts = new ArrayList<Contact>();
 
-        /*myContacts.add(new Contact(1, "Aditi Lonhari", "aditi@gmail.com"));
+        myContacts.add(new Contact(1, "Aditi Lonhari", "aditi@gmail.com"));
         myContacts.add(new Contact(2, "Disha Satija", "disha@gmail.com"));
         myContacts.add(new Contact(3, "Kevin Patel", "kevin@gmail.com"));
-        myContacts.add(new Contact(4, "Harshit", "harshit@gmail.com"));*/
+        myContacts.add(new Contact(4, "Harshit", "harshit@gmail.com"));
 
 
 

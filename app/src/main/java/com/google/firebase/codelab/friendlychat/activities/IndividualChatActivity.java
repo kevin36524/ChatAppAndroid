@@ -54,7 +54,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity
+public class IndividualChatActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "IndividualChatActivity";
     public static final String MESSAGES_CHILD = "messages";
     private static final int REQUEST_INVITE = 1;
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
 
     private Button mSendButton;
-    private Button mAddButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private ProgressBar mProgressBar;
@@ -94,6 +93,8 @@ public class MainActivity extends AppCompatActivity
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,18 +105,23 @@ public class MainActivity extends AppCompatActivity
         mUsername = ANONYMOUS;
 
         mFirebaseAuth = FirebaseAuth.getInstance();
-        mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        if (mFirebaseUser == null) {
-            // Not signed in, launch the Sign In activity
-            startActivity(new Intent(this, SignInActivity.class));
-            finish();
-            return;
-        } else {
-            mUsername = mFirebaseUser.getDisplayName();
-            if (mFirebaseUser.getPhotoUrl() != null) {
-                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                mFirebaseUser = mFirebaseAuth.getCurrentUser();
+                if (mFirebaseUser == null) {
+                    // Not signed in, launch the Sign In activity
+                    startActivity(new Intent(IndividualChatActivity.this, SignInActivity.class));
+                    finish();
+                    return;
+                } else {
+                    mUsername = mFirebaseUser.getDisplayName();
+                    if (mFirebaseUser.getPhotoUrl() != null) {
+                        mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+                    }
+                }
             }
-        }
+        };
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
@@ -147,10 +153,10 @@ public class MainActivity extends AppCompatActivity
                 if (friendlyMessage.getPhotoUrl() == null) {
                     viewHolder.messengerImageView
                             .setImageDrawable(ContextCompat
-                                    .getDrawable(MainActivity.this,
+                                    .getDrawable(IndividualChatActivity.this,
                                             R.drawable.ic_account_circle_black_36dp));
                 } else {
-                    Glide.with(MainActivity.this)
+                    Glide.with(IndividualChatActivity.this)
                             .load(friendlyMessage.getPhotoUrl())
                             .into(viewHolder.messengerImageView);
                 }
@@ -214,15 +220,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
-        mAddButton = (Button) findViewById(R.id.addButton);
-        mAddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, ContactsListActivity.class);
-                startActivity(i);
-            }
-        });
     }
 
     @Override
@@ -236,11 +233,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPause() {
         super.onPause();
+        mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override

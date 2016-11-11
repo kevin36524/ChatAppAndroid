@@ -20,6 +20,20 @@ public class FriendlyMessage {
     private String text;
     private String name;
     private String photoUrl;
+    /**
+     * References the type of the message video/image/text
+     */
+    private int type;
+
+    public String getJsonPayLoad() {
+        return jsonPayLoad;
+    }
+
+    public void setJsonPayLoad(String jsonPayLoad) {
+        this.jsonPayLoad = jsonPayLoad;
+    }
+
+    private String jsonPayLoad;
 
     public FriendlyMessage() {
     }
@@ -53,4 +67,9 @@ public class FriendlyMessage {
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
     }
+
+    public int getType() {return type;}
+
+    public void setType(int type) {this.type = type;}
+
 }

@@ -57,6 +57,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class IndividualChatActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
 
+
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         public TextView messageTextView;
         public TextView messengerTextView;
@@ -222,6 +223,22 @@ public class IndividualChatActivity extends AppCompatActivity
 
     }
 
+    public void onAddTrailor(View view) {
+        Intent myIntent = new Intent(view.getContext(), TrailerGridViewActivity.class);
+        startActivityForResult(myIntent, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // REQUEST_CODE is defined above
+        if (resultCode == RESULT_OK && requestCode == 0) {
+            // Extract name value from result extras
+            String response = data.getExtras().getString("response");
+            // Toast the name to display temporarily on screen
+            Toast.makeText(this, response, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -275,4 +292,6 @@ public class IndividualChatActivity extends AppCompatActivity
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
         FirebaseCrash.report(new Exception("OnConnectionFailed: " + connectionResult));
     }
+
+
 }

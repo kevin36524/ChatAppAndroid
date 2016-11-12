@@ -7,15 +7,20 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.codelab.friendlychat.adapters.LaunchChatsAdapter;
-import com.google.firebase.codelab.friendlychat.models.User;
 import com.google.firebase.codelab.friendlychat.models.FriendlyChats;
 import com.google.firebase.codelab.friendlychat.models.FriendlyMessage;
+import com.google.firebase.codelab.friendlychat.models.Group;
+import com.google.firebase.codelab.friendlychat.models.User;
+import com.google.firebase.codelab.friendlychat.utilities.ChatApplication;
+import com.google.firebase.codelab.friendlychat.utilities.FirebaseUtils;
+import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +31,7 @@ import java.util.List;
 
 public class LaunchChatsActivity extends AppCompatActivity {
 
+    static final String TAG = LaunchChatsActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,6 +70,21 @@ public class LaunchChatsActivity extends AppCompatActivity {
         rvChatList.setLayoutManager(new LinearLayoutManager(this));
 
         setFAB();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ChatApplication.getFirebaseClient().getGroupsForCurrentUserIfSetupDone(new FirebaseUtils.FetchedMultiChildListener() {
+            @Override
+            public void fetchedMultiListener(ArrayList<DataSnapshot> groupsSnapShot) {
+                ArrayList<Group> groups = new ArrayList<>();
+                for(int i = 0; i < groupsSnapShot.size(); i++) {
+                    groups.add(groupsSnapShot.get(i).getValue(Group.class));
+                }
+                Log.d(TAG, "Got groups");
+            }
+        });
     }
 
     private void setFAB(){

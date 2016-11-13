@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.codelab.friendlychat.models.FriendlyMessage;
 import com.google.firebase.codelab.friendlychat.models.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -14,6 +15,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static com.google.firebase.codelab.friendlychat.activities.IndividualChatActivity.MESSAGES_FOR_GROUP_NODE;
 
 /**
  * Created by patelkev on 11/10/16.
@@ -86,7 +89,6 @@ public class FirebaseClient {
         });
     }
 
-
     private void addFireBaseUserIfNeeded(FirebaseUser mFirebaseUser) {
         DatabaseReference usersNodeRef = mFirebaseDatabaseReference.child(USERS_NODE);
         DatabaseReference currentUserRef = usersNodeRef.child(mFirebaseUser.getUid());
@@ -116,6 +118,11 @@ public class FirebaseClient {
             return;
         }
         getGroupsForCurrentUser(mGroupsListener);
+    }
+
+    public void sendMessageForGroup(String groupID, FriendlyMessage messageToSend) {
+        mFirebaseDatabaseReference.child(MESSAGES_FOR_GROUP_NODE).child(groupID)
+                .push().setValue(messageToSend);
     }
 
     public FirebaseAuth getmFirebaseAuth() {

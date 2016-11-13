@@ -94,7 +94,7 @@ public class IndividualChatActivity extends AppCompatActivity
 
     public static final String INTENT_GROUP_KEY = "groupKey";
     private static final String TAG = "IndividualChatActivity";
-    public static final String MESSAGES_CHILD = "messages";
+    public static final String MESSAGES_FOR_GROUP_NODE = "messagesForGroup";
     private static final int REQUEST_INVITE = 1;
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
     public static final String ANONYMOUS = "anonymous";
@@ -170,7 +170,7 @@ public class IndividualChatActivity extends AppCompatActivity
                 FriendlyMessage.class,
                 R.layout.item_message,
                 MessageViewHolder.class,
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD)) {
+                mFirebaseDatabaseReference.child(MESSAGES_FOR_GROUP_NODE).child(currentGroupID)) {
 
             @Override
             protected void populateViewHolder(final MessageViewHolder viewHolder,
@@ -258,14 +258,12 @@ public class IndividualChatActivity extends AppCompatActivity
                         mPhotoUrl);
                 if (trailerUrl != null) {
                     friendlyMessage.setJsonPayLoad(trailerUrl);
-
+                    trailerUrl = null;
                 }
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD)
-                        .push().setValue(friendlyMessage);
+                ChatApplication.getFirebaseClient().sendMessageForGroup(currentGroupID,friendlyMessage);
                 mMessageEditText.setText("");
             }
         });
-
     }
 
     public void onAddTrailor(View view) {

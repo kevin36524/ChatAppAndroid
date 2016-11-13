@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.codelab.friendlychat.R;
@@ -57,17 +59,36 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class IndividualChatActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
+    public static final String YT_API_KEY = "AIzaSyDBQycZ7fwrRNm2OBTd54X4k9wcwjNM5LE";
+    public android.app.FragmentManager fm = getFragmentManager();
+    private String trailer_poster_url;
+
+
+    public void onPlayVideo(View view) {
+        Toast.makeText(IndividualChatActivity.this, "Playing Video", Toast.LENGTH_SHORT).show();
+
+        Intent intent = YouTubeStandalonePlayer.createVideoIntent(
+                this, YT_API_KEY, trailerUrl,0,true,true);
+        startActivity(intent);
+
+    }
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         public TextView messageTextView;
         public TextView messengerTextView;
         public CircleImageView messengerImageView;
+        public ImageView trailerImageView;
+        public ImageView overlayImageView ;
 
         public MessageViewHolder(View v) {
             super(v);
             messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
             messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
             messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
+            trailerImageView = (ImageView) itemView.findViewById(R.id.ivTrailerLogo);
+            overlayImageView = (ImageView) itemView.findViewById(R.id.ivOverlay);
+
+
         }
     }
 
@@ -87,6 +108,7 @@ public class IndividualChatActivity extends AppCompatActivity
     private LinearLayoutManager mLinearLayoutManager;
     private ProgressBar mProgressBar;
     private EditText mMessageEditText;
+    private String trailerUrl;
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
@@ -146,7 +168,7 @@ public class IndividualChatActivity extends AppCompatActivity
                 mFirebaseDatabaseReference.child(MESSAGES_CHILD)) {
 
             @Override
-            protected void populateViewHolder(MessageViewHolder viewHolder,
+            protected void populateViewHolder(final MessageViewHolder viewHolder,
                                               FriendlyMessage friendlyMessage, int position) {
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 viewHolder.messageTextView.setText(friendlyMessage.getText());
@@ -161,10 +183,23 @@ public class IndividualChatActivity extends AppCompatActivity
                             .load(friendlyMessage.getPhotoUrl())
                             .into(viewHolder.messengerImageView);
                 }
+                if (friendlyMessage.getJsonPayLoad() != null) {
+                    viewHolder.trailerImageView.setVisibility(View.VISIBLE);
+                    viewHolder.overlayImageView.setVisibility(View.VISIBLE);
+                            Glide.with(IndividualChatActivity.this)
+                            .load(trailer_poster_url)
+                            .into(viewHolder.trailerImageView);
+
+                }
+
+
             }
         };
 
-        mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+
+        mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver()
+
+        {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
@@ -181,6 +216,7 @@ public class IndividualChatActivity extends AppCompatActivity
                 }
             }
         });
+
 
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
@@ -215,12 +251,37 @@ public class IndividualChatActivity extends AppCompatActivity
                         FriendlyMessage(mMessageEditText.getText().toString(),
                         mUsername,
                         mPhotoUrl);
+                if (trailerUrl != null) {
+                    friendlyMessage.setJsonPayLoad(trailerUrl);
+
+                }
                 mFirebaseDatabaseReference.child(MESSAGES_CHILD)
                         .push().setValue(friendlyMessage);
                 mMessageEditText.setText("");
             }
         });
 
+    }
+
+    public void onAddTrailor(View view) {
+        Intent myIntent = new Intent(view.getContext(), TrailerGridViewActivity.class);
+        startActivityForResult(myIntent, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // REQUEST_CODE is defined above
+        if (resultCode == RESULT_OK && requestCode == 0) {
+            // Extract name value from result extras
+            trailerUrl = data.getExtras().getString("trailerUrl");
+            trailer_poster_url = data.getExtras().getString("posterPath");
+
+            mSendButton.setEnabled(true);
+            // Toast the name to display temporarily on screen
+            Toast.makeText(this, "Video Added", Toast.LENGTH_SHORT).show();
+
+
+        }
     }
 
     @Override
@@ -244,7 +305,9 @@ public class IndividualChatActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDestroy() {super.onDestroy();}
+    public void onDestroy() {
+        super.onDestroy();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -276,4 +339,6 @@ public class IndividualChatActivity extends AppCompatActivity
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
         FirebaseCrash.report(new Exception("OnConnectionFailed: " + connectionResult));
     }
+
+
 }

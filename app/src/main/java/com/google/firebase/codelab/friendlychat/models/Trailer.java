@@ -1,46 +1,46 @@
 package com.google.firebase.codelab.friendlychat.models;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * Created by Disha on 10/20/2016.
  */
-public class Trailer {
+public class Trailer implements Serializable{
 
     private String id;
-    private String key;
-    private String name;
+    private String url;
+    private String title;
+
+
+    public Trailer(JSONObject jsonObject) throws JSONException {
+        this.id = jsonObject.getString("id");
+        this.url = jsonObject.getString("key");
+        this.title=jsonObject.getString("name");
+        this.site = jsonObject.getString("site");
+
+    }
 
     public String getId() {
         return id;
     }
-
-    public void setId(String id) {
-        this.id = id;
+    public String getUrl() {
+        //return String.format("https://www.youtube.com/watch?v=%s",url);
+        return url;
     }
-
-    public String getKey() {
-        return key;
+    public String getTitle() {
+        return title;
     }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getSize() {
         return size;
     }
-
     public void setSize(String size) {
         this.size = size;
     }
-
     public String getType() {
         return type;
     }
@@ -61,5 +61,18 @@ public class Trailer {
 
     private String site;
     private String type;
+
+    public static ArrayList<Trailer> fromJsonArray(JSONArray trailerArray) {
+        ArrayList<Trailer> results = new ArrayList<>();
+        for (int x = 0; x < trailerArray.length(); x++) {
+            try {
+                results.add(new Trailer(trailerArray.getJSONObject(x)));
+            } catch (JSONException e) {
+                e.printStackTrace();
+                continue;
+            }
+        }
+        return results;
+    }
 
 }

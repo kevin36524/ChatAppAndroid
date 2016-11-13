@@ -42,6 +42,7 @@ public class FriendlyMessage {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
+
     }
 
     public String getText() {

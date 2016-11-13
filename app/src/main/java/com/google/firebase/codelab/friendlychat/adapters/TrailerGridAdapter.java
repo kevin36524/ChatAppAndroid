@@ -1,52 +1,85 @@
 package com.google.firebase.codelab.friendlychat.adapters;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.codelab.friendlychat.R;
+import com.google.firebase.codelab.friendlychat.models.Movie;
+
+import java.util.ArrayList;
 
 /**
  * Created by Disha on 10/20/2016.
  */
-public class TrailerGridAdapter extends BaseAdapter {
-    private Context context;
-    private Integer[] imageIds = {
-            R.mipmap.ic_launcher,R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher,  R.mipmap.ic_launcher
-    };
+public class TrailerGridAdapter extends ArrayAdapter<Movie> {
 
-    public TrailerGridAdapter(Context c) {
-        context = c;
+
+    private Context mContext;
+    private int layoutResourceId;
+
+    public ArrayList<Movie> getmGridData() {
+        return mGridData;
     }
 
-    public int getCount() {
-        return imageIds.length;
+    public void setmGridData(ArrayList<Movie> mGridData) {
+        this.mGridData = mGridData;
+        notifyDataSetChanged();
     }
 
-    public Object getItem(int position) {
-        return imageIds[position];
+    private ArrayList<Movie> mGridData = new ArrayList<Movie>();
+
+    public TrailerGridAdapter(Context mContext, int layoutResourceId, ArrayList<Movie> mGridData) {
+        super(mContext, layoutResourceId, mGridData);
+        this.layoutResourceId = layoutResourceId;
+        this.mContext = mContext;
+        this.mGridData = mGridData;
     }
 
-    public long getItemId(int position) {
-        return 0;
-    }
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View row = convertView;
+        ViewHolder holder;
 
-    public View getView(int position, View view, ViewGroup parent) {
-        ImageView iview;
-        if (view == null) {
-            iview = new ImageView(context);
-            iview.setLayoutParams(new GridView.LayoutParams(150,200));
-            iview.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            iview.setPadding(5, 5, 5, 5);
+        if (row == null) {
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            row = inflater.inflate(layoutResourceId, parent, false);
+            holder = new ViewHolder();
+            holder.titleTextView = (TextView) row.findViewById(R.id.tvTrailerTitle);
+            holder.imageView = (ImageView) row.findViewById(R.id.ivTrailerImage);
+            row.setTag(holder);
         } else {
-            iview = (ImageView) view;
+            holder = (ViewHolder) row.getTag();
         }
-        iview.setImageResource(imageIds[position]);
-        return iview;
-    }
-}
 
+        Movie item = mGridData.get(position);
+        holder.titleTextView.setText(item.getOriginalTitle());
+
+        Glide.with(this.getContext()).load(item.getPosterPath()).into(holder.imageView);
+        return row;
+    }
+
+    @Override
+    public int getCount() {
+
+        int count = mGridData.size();
+        return count;
+    }
+
+    @Override
+    public Movie getItem(int position) {
+        return mGridData.get(position);
+    }
+
+    static class ViewHolder {
+        TextView titleTextView;
+        ImageView imageView;
+    }
+
+
+}

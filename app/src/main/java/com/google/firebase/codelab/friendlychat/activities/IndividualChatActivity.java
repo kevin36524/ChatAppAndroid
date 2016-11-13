@@ -92,6 +92,7 @@ public class IndividualChatActivity extends AppCompatActivity
         }
     }
 
+    public static final String INTENT_GROUP_KEY = "groupKey";
     private static final String TAG = "IndividualChatActivity";
     public static final String MESSAGES_CHILD = "messages";
     private static final int REQUEST_INVITE = 1;
@@ -102,6 +103,8 @@ public class IndividualChatActivity extends AppCompatActivity
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
+
+    private String currentGroupID;
 
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
@@ -126,6 +129,8 @@ public class IndividualChatActivity extends AppCompatActivity
         FirebaseCrash.log("OnCreateMethod");
         // Set default username is anonymous.
         mUsername = ANONYMOUS;
+
+        currentGroupID = getIntent().getStringExtra(INTENT_GROUP_KEY);
 
         mFirebaseAuth = ChatApplication.getFirebaseClient().getmFirebaseAuth();
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {

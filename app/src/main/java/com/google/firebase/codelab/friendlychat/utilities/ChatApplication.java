@@ -14,8 +14,15 @@ public class ChatApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        ChatApplication.context = getApplicationContext();
+    }
 
-        ChatApplication.context = this;
+    public static Context getAppContext() {
+        return ChatApplication.context;
+    }
+
+    public static AutoReplyClient getAutoReplyClient() {
+        return AutoReplyClient.getInstance();
     }
 
     public static FirebaseClient getFirebaseClient() {

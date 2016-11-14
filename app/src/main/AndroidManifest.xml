@@ -13,15 +13,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activities.IndividualChatActivity"/>
-        <activity android:name=".activities.SignInActivity"/>
-        <activity android:name=".activities.ContactsListActivity"/>
-        <activity android:name=".activities.LaunchChatsActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+        <activity android:name=".activities.SignInActivity">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </intent-filter>
         </activity>
+        <activity android:name=".activities.ContactsListActivity"/>
+        <activity android:name=".activities.LaunchChatsActivity"/>
         <activity android:name=".activities.TrailerGridViewActivity">
         </activity>
     </application>

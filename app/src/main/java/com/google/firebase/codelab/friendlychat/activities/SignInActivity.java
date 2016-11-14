@@ -38,6 +38,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.codelab.friendlychat.utilities.ChatApplication;
+import com.google.firebase.codelab.friendlychat.utilities.FirebaseClient;
 
 public class SignInActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
@@ -76,6 +77,15 @@ public class SignInActivity extends AppCompatActivity implements
 
         // Initialize FirebaseAuth
         mFirebaseAuth = ChatApplication.getFirebaseClient().getmFirebaseAuth();
+        ChatApplication.getFirebaseClient().addPostSetupListener(new FirebaseClient.PostSetupInterface() {
+            @Override
+            public void postSetupInterface() {
+                if (ChatApplication.getFirebaseClient().getmFirebaseUser() != null) {
+                    startActivity(new Intent(SignInActivity.this, LaunchChatsActivity.class));
+                    finish();
+                }
+            }
+        });
 
     }
 

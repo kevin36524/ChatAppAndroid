@@ -26,7 +26,7 @@ import java.util.List;
 
 public class FirebaseClient {
 
-    private interface PostSetupInterface {
+    public interface PostSetupInterface {
         public void  postSetupInterface();
     }
 
@@ -68,6 +68,10 @@ public class FirebaseClient {
             }
         };
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    public void addPostSetupListener(PostSetupInterface postSetupInterface) {
+        postSetupInterfaces.add(postSetupInterface);
     }
 
     private void executePostSetupInterfaces() {

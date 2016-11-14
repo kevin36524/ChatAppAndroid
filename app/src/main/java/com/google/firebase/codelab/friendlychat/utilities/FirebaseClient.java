@@ -26,7 +26,7 @@ import java.util.List;
 
 public class FirebaseClient {
 
-    private interface PostSetupInterface {
+    public interface PostSetupInterface {
         public void  postSetupInterface();
     }
 
@@ -68,6 +68,10 @@ public class FirebaseClient {
             }
         };
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    public void addPostSetupListener(PostSetupInterface postSetupInterface) {
+        postSetupInterfaces.add(postSetupInterface);
     }
 
     private void executePostSetupInterfaces() {
@@ -137,8 +141,6 @@ public class FirebaseClient {
         getGroupsForCurrentUser(fetchedMultiChildListener);
     }
 
-    //KEVINTODO - Update Group with the latest time stamp and /groups/gid/[ts+lmSnippet]
-    //Add the Message to messagesForGroup node.
     public void sendMessageForGroup(String groupID, FriendlyMessage messageToSend) {
         mFirebaseDatabaseReference.child(MESSAGES_FOR_GROUP_NODE).child(groupID)
                 .push().setValue(messageToSend);

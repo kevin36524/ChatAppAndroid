@@ -112,6 +112,9 @@ public class IndividualChatActivity extends AppCompatActivity
     private EditText mMessageEditText;
     private String trailerUrl;
 
+    private Boolean shouldAutoReply;
+    private Integer lastIndex;
+
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
@@ -129,6 +132,7 @@ public class IndividualChatActivity extends AppCompatActivity
         // Set default username is anonymous.
         mUsername = ANONYMOUS;
 
+        this.shouldAutoReply = false;
         currentGroupID = getIntent().getStringExtra(INTENT_GROUP_KEY);
 
         mFirebaseAuth = ChatApplication.getFirebaseClient().getmFirebaseAuth();
@@ -198,13 +202,13 @@ public class IndividualChatActivity extends AppCompatActivity
             }
         };
 
-
         mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver()
 
         {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
+                sendAutoReplyForMessageAtIndex(positionStart);
                 int friendlyMessageCount = mFirebaseAdapter.getItemCount();
                 int lastVisiblePosition =
                         mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
@@ -261,6 +265,18 @@ public class IndividualChatActivity extends AppCompatActivity
                 mMessageEditText.setText("");
             }
         });
+    }
+
+    public void sendAutoReplyForMessageAtIndex(int index) {
+        if (lastIndex != null && lastIndex == index - 1 && shouldAutoReply) {
+            FriendlyMessage message = mFirebaseAdapter.getItem(index);
+            if (!message.getPhotoUrl().equals(mFirebaseUser.getPhotoUrl())) {
+                String autoReplyText = ChatApplication.getAutoReplyClient().getResponseForText(message.getText());
+                FriendlyMessage newMessage = new FriendlyMessage(autoReplyText, mUsername, mPhotoUrl);
+                ChatApplication.getFirebaseClient().sendMessageForGroup(currentGroupID, newMessage);
+            }
+        }
+        lastIndex = index;
     }
 
     public void onAddTrailor(View view) {

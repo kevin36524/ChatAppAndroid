@@ -1,5 +1,6 @@
 package com.google.firebase.codelab.friendlychat.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,12 +14,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.codelab.friendlychat.adapters.LaunchChatsAdapter;
-import com.google.firebase.codelab.friendlychat.models.User;
-import com.google.firebase.codelab.friendlychat.models.FriendlyChats;
-import com.google.firebase.codelab.friendlychat.models.FriendlyMessage;
+import com.google.firebase.codelab.friendlychat.models.Group;
+import com.google.firebase.codelab.friendlychat.utilities.ChatApplication;
+import com.google.firebase.codelab.friendlychat.utilities.FirebaseClient;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import static com.google.firebase.codelab.friendlychat.activities.IndividualChatActivity.INTENT_GROUP_KEY;
 
 /**
  * Created by aditi on 11/10/2016.
@@ -26,44 +28,54 @@ import java.util.List;
 
 public class LaunchChatsActivity extends AppCompatActivity {
 
+    static final String TAG = LaunchChatsActivity.class.getSimpleName();
+    ArrayList<Group> myGroups;
+    LaunchChatsAdapter mGroupsAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        final Context context = LaunchChatsActivity.this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch_chats);
 
-        List<FriendlyChats> myChats = new ArrayList<FriendlyChats>();
-
-        FriendlyChats chat1 = new FriendlyChats(new User("1", "Aditi Lonhari", "aditi@gmail.com", null));
-        FriendlyMessage friendlyMessage1 = new FriendlyMessage();
-        friendlyMessage1.setText("Hello there..");
-        chat1.setChatToMessages(friendlyMessage1);
-        myChats.add(chat1);
-
-        FriendlyChats chat2 = new FriendlyChats(new User("2", "Disha Satija", "disha@gmail.com", null));
-        FriendlyMessage friendlyMessage2 = new FriendlyMessage();
-        friendlyMessage2.setText("Yes, I saw that last night!");
-        chat2.setChatToMessages(friendlyMessage2);
-        myChats.add(chat2);
-
-        FriendlyChats chat3 = new FriendlyChats(new User("3", "Kevin Patel", "kevin@gmail.com", null));
-        FriendlyMessage friendlyMessage3 = new FriendlyMessage();
-        friendlyMessage3.setText("OMG! Seriously???");
-        chat3.setChatToMessages(friendlyMessage3);
-        myChats.add(chat3);
-
-        FriendlyChats chat4 = new FriendlyChats(new User("4", "Harshit", "harshit@gmail.com", null));
-        FriendlyMessage friendlyMessage4 = new FriendlyMessage();
-        friendlyMessage4.setText("Let's meet at Codepath class at FB Bldg 20 Lobby2, 1 Facebook way.");
-        chat4.setChatToMessages(friendlyMessage4);
-        myChats.add(chat4);
-
-        LaunchChatsAdapter adapter = new LaunchChatsAdapter(LaunchChatsActivity.this, myChats);
+        myGroups = new ArrayList<>();
+        mGroupsAdapter = new LaunchChatsAdapter(this, myGroups, new LaunchChatsAdapter.ClickDelegate() {
+            @Override
+            public void onConversationClicked(Group selectedGroup) {
+                Intent i = new Intent(context , IndividualChatActivity.class);
+                i.putExtra(INTENT_GROUP_KEY, selectedGroup.getId());
+                context.startActivity(i);
+            }
+        });
         RecyclerView rvChatList = (RecyclerView) findViewById(R.id.rvChats);
-        rvChatList.setAdapter(adapter);
+        rvChatList.setAdapter(mGroupsAdapter);
         rvChatList.setLayoutManager(new LinearLayoutManager(this));
 
         setFAB();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mGroupsAdapter.updateGroups(new ArrayList<Group>());
+        mGroupsAdapter.notifyDataSetChanged();
+
+        ChatApplication.getFirebaseClient().getGroupsForCurrentUserIfSetupDone(new FirebaseClient.FetchGroupsInterface() {
+            @Override
+            public void fetchedGroups(ArrayList<Group> groups) {
+                mGroupsAdapter.updateGroups(groups);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 200 && data != null) {
+            Intent i = new Intent(this , IndividualChatActivity.class);
+            i.putExtra(INTENT_GROUP_KEY, data.getStringExtra(INTENT_GROUP_KEY));
+            this.startActivity(i);
+        }
     }
 
     private void setFAB(){
@@ -75,7 +87,7 @@ public class LaunchChatsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(LaunchChatsActivity.this, ContactsListActivity.class);
-                startActivity(i);
+                startActivityForResult(i, 200);
             }
         });
     }

@@ -1,8 +1,6 @@
 package com.google.firebase.codelab.friendlychat.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +9,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.codelab.friendlychat.R;
-import com.google.firebase.codelab.friendlychat.activities.IndividualChatActivity;
-import com.google.firebase.codelab.friendlychat.models.User;
-import com.google.firebase.codelab.friendlychat.models.FriendlyChats;
+import com.google.firebase.codelab.friendlychat.models.Group;
+import com.google.firebase.codelab.friendlychat.utilities.ChatApplication;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -24,56 +21,65 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 
 public class LaunchChatsAdapter extends RecyclerView.Adapter<LaunchChatsAdapter.ViewHolder> {
-
-    private List<FriendlyChats> myChats;
+    private ArrayList<Group> myGroups;
     private Context mContext;
+    public ClickDelegate mClickDelegate;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public interface ClickDelegate {
+        public void onConversationClicked(Group selectedGroup);
+    }
 
-        private User mUser;// change to arraylist for groupchat
-        private FriendlyChats mFriendlyChats;
-
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView tvChatContactName;
         private TextView tvChatTimestamp;
         private TextView tvChatLastComment;
         private CircleImageView civProfileImage;
+        public Group selectedGroup;
+        public ClickDelegate mClickDelegate;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, ClickDelegate mClickDelegate) {
             super(itemView);
             tvChatContactName = (TextView) itemView.findViewById(R.id.tvNameChat);
             tvChatTimestamp = (TextView) itemView.findViewById(R.id.tvTimestampChat);
             tvChatLastComment = (TextView) itemView.findViewById(R.id.tvLastCommentChat);
             civProfileImage = (CircleImageView) itemView.findViewById(R.id.ivProfileImageChat);
+            this.mClickDelegate = mClickDelegate;
+        }
+
+        @Override
+        public void onClick(View v) {
+            this.mClickDelegate.onConversationClicked(selectedGroup);
         }
     }
 
     @Override
     public LaunchChatsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View contactView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat, parent, false);
-        ViewHolder viewHolder = new ViewHolder(contactView);
+        ViewHolder viewHolder = new ViewHolder(contactView, mClickDelegate);
+        contactView.setOnClickListener(viewHolder);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(LaunchChatsAdapter.ViewHolder viewholder, int position) {
-        Glide.with(mContext).load(R.drawable.ic_account_circle_black_36dp).into(viewholder.civProfileImage);
-        viewholder.tvChatContactName.setText(myChats.get(position).getChatToUser().getName());
-        viewholder.tvChatTimestamp.setText("1-1-2017");
-        viewholder.tvChatLastComment.setText(myChats.get(position).getChatToMessages().getText().toString());
-
-        viewholder.tvChatLastComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Snackbar.make(v, "Clicked from adap", Snackbar.LENGTH_SHORT).show();
-                Intent i = new Intent(getContext(), IndividualChatActivity.class);
-                getContext().startActivity(i);
-            }
-        });
+        Group currentGroup = myGroups.get(position);
+        String currentUserID = ChatApplication.getFirebaseClient().getmFirebaseUser().getUid();
+        viewholder.selectedGroup = currentGroup;
+        Glide.with(mContext).load(currentGroup.getImageUrl(currentUserID)).into(viewholder.civProfileImage);
+        viewholder.tvChatContactName.setText(currentGroup.getTitle());
+        viewholder.tvChatTimestamp.setText(currentGroup.getRelativeTimeStamp());
+        viewholder.tvChatLastComment.setText(currentGroup.getLastMessageSnippet());
     }
 
-    public LaunchChatsAdapter(Context context, List<FriendlyChats> chats){
+    public void updateGroups(ArrayList<Group> newGroups) {
+        myGroups = newGroups;
+        notifyDataSetChanged();
+    }
+
+    public LaunchChatsAdapter(Context context, ArrayList<Group> chats, ClickDelegate mClickDelegate){
         mContext = context;
-        myChats = chats;
+        myGroups = chats;
+        this.mClickDelegate = mClickDelegate;
     }
 
     private Context getContext(){
@@ -82,7 +88,7 @@ public class LaunchChatsAdapter extends RecyclerView.Adapter<LaunchChatsAdapter.
 
     @Override
     public int getItemCount() {
-        return myChats.size();
+        return myGroups.size();
     }
 
 }

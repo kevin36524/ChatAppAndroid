@@ -23,17 +23,29 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
     private List<User> myUsers;
     private Context mContext;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        ImageView ivProfileImage;
-        TextView tvUsername;
-        TextView tvEmail;
+        public interface UserClickListener {
+            public void onContactClicked(User user);
+        }
+
+        public ImageView ivProfileImage;
+        public TextView tvUsername;
+        public TextView tvEmail;
+        public User contact;
+        public UserClickListener mUserClickListener;
 
         public ViewHolder(View itemView) {
             super(itemView);
             ivProfileImage = (ImageView) itemView.findViewById(R.id.ivProfileImageContacts);
             tvUsername = (TextView) itemView.findViewById(R.id.tvNameContacts);
             tvEmail = (TextView) itemView.findViewById(R.id.tvEmailContacts);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mUserClickListener.onContactClicked(contact);
         }
     }
 

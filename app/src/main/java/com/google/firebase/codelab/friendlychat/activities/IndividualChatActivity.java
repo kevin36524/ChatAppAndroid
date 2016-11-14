@@ -57,6 +57,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.google.firebase.codelab.friendlychat.utilities.FirebaseClient.MESSAGES_FOR_GROUP_NODE;
+
 public class IndividualChatActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
     public static final String YT_API_KEY = "AIzaSyDBQycZ7fwrRNm2OBTd54X4k9wcwjNM5LE";
@@ -87,13 +89,11 @@ public class IndividualChatActivity extends AppCompatActivity
             messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
             trailerImageView = (ImageView) itemView.findViewById(R.id.ivTrailerLogo);
             overlayImageView = (ImageView) itemView.findViewById(R.id.ivOverlay);
-
-
         }
     }
 
+    public static final String INTENT_GROUP_KEY = "groupKey";
     private static final String TAG = "IndividualChatActivity";
-    public static final String MESSAGES_CHILD = "messages";
     private static final int REQUEST_INVITE = 1;
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
     public static final String ANONYMOUS = "anonymous";
@@ -102,6 +102,8 @@ public class IndividualChatActivity extends AppCompatActivity
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
+
+    private String currentGroupID;
 
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
@@ -126,6 +128,8 @@ public class IndividualChatActivity extends AppCompatActivity
         FirebaseCrash.log("OnCreateMethod");
         // Set default username is anonymous.
         mUsername = ANONYMOUS;
+
+        currentGroupID = getIntent().getStringExtra(INTENT_GROUP_KEY);
 
         mFirebaseAuth = ChatApplication.getFirebaseClient().getmFirebaseAuth();
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -165,7 +169,7 @@ public class IndividualChatActivity extends AppCompatActivity
                 FriendlyMessage.class,
                 R.layout.item_message,
                 MessageViewHolder.class,
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD)) {
+                mFirebaseDatabaseReference.child(MESSAGES_FOR_GROUP_NODE).child(currentGroupID)) {
 
             @Override
             protected void populateViewHolder(final MessageViewHolder viewHolder,
@@ -191,8 +195,6 @@ public class IndividualChatActivity extends AppCompatActivity
                             .into(viewHolder.trailerImageView);
 
                 }
-
-
             }
         };
 
@@ -253,14 +255,12 @@ public class IndividualChatActivity extends AppCompatActivity
                         mPhotoUrl);
                 if (trailerUrl != null) {
                     friendlyMessage.setJsonPayLoad(trailerUrl);
-
+                    trailerUrl = null;
                 }
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD)
-                        .push().setValue(friendlyMessage);
+                ChatApplication.getFirebaseClient().sendMessageForGroup(currentGroupID,friendlyMessage);
                 mMessageEditText.setText("");
             }
         });
-
     }
 
     public void onAddTrailor(View view) {

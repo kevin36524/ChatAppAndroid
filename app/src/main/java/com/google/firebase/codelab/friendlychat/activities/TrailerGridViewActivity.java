@@ -60,15 +60,13 @@ public class TrailerGridViewActivity extends AppCompatActivity {
                 Movie movie = (Movie) parent.getItemAtPosition(position);
                 if (movie != null) {
                     getTrailerUrl(movie.getMovieId(), movie.getPosterPath());
-
                 }
-
-
-
 
 //        mTrailerProgressBar.setVisibility(View.VISIBLE);
             }
         });
+        getMovieDetails();
+
     }
 
     private void getTrailerUrl(int movieId, final String posterPath) {
@@ -96,14 +94,10 @@ public class TrailerGridViewActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(getApplicationContext(), "Trailer not available", Toast.LENGTH_SHORT).show();
                     }
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-
-
             @Override
             public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
                 // called when response HTTP status is "4XX" (eg. 401, 403, 404)

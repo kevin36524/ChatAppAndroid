@@ -53,7 +53,7 @@ public class TrailerGridViewActivity extends AppCompatActivity {
         mTrailerGridAdapter = new TrailerGridAdapter(this, R.layout.trailer_poster_item, mGridData);
 
         mGridView.setAdapter(mTrailerGridAdapter);
-
+        getMovieDetails();
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
@@ -64,7 +64,7 @@ public class TrailerGridViewActivity extends AppCompatActivity {
                 }
 
 
-                getMovieDetails();
+
 
 //        mTrailerProgressBar.setVisibility(View.VISIBLE);
             }

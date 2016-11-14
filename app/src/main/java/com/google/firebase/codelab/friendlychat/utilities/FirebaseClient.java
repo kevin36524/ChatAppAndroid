@@ -141,8 +141,6 @@ public class FirebaseClient {
         getGroupsForCurrentUser(fetchedMultiChildListener);
     }
 
-    //KEVINTODO - Update Group with the latest time stamp and /groups/gid/[ts+lmSnippet]
-    //Add the Message to messagesForGroup node.
     public void sendMessageForGroup(String groupID, FriendlyMessage messageToSend) {
         mFirebaseDatabaseReference.child(MESSAGES_FOR_GROUP_NODE).child(groupID)
                 .push().setValue(messageToSend);

@@ -67,6 +67,7 @@ public class IndividualChatActivity extends AppCompatActivity
 
 
     public void onPlayVideo(View view) {
+
         Toast.makeText(IndividualChatActivity.this, "Playing Video", Toast.LENGTH_SHORT).show();
 
         Intent intent = YouTubeStandalonePlayer.createVideoIntent(
@@ -197,6 +198,7 @@ public class IndividualChatActivity extends AppCompatActivity
                             Glide.with(IndividualChatActivity.this)
                             .load(trailer_poster_url)
                             .into(viewHolder.trailerImageView);
+                    trailerUrl=friendlyMessage.getJsonPayLoad();
 
                 }
             }

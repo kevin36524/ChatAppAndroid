@@ -57,6 +57,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.google.firebase.codelab.friendlychat.utilities.FirebaseClient.MESSAGES_FOR_GROUP_NODE;
+
 public class IndividualChatActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
     public static final String YT_API_KEY = "AIzaSyDBQycZ7fwrRNm2OBTd54X4k9wcwjNM5LE";
@@ -87,14 +89,11 @@ public class IndividualChatActivity extends AppCompatActivity
             messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
             trailerImageView = (ImageView) itemView.findViewById(R.id.ivTrailerLogo);
             overlayImageView = (ImageView) itemView.findViewById(R.id.ivOverlay);
-
-
         }
     }
 
     public static final String INTENT_GROUP_KEY = "groupKey";
     private static final String TAG = "IndividualChatActivity";
-    public static final String MESSAGES_FOR_GROUP_NODE = "messagesForGroup";
     private static final int REQUEST_INVITE = 1;
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
     public static final String ANONYMOUS = "anonymous";
@@ -196,8 +195,6 @@ public class IndividualChatActivity extends AppCompatActivity
                             .into(viewHolder.trailerImageView);
 
                 }
-
-
             }
         };
 

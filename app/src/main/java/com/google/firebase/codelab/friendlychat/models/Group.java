@@ -2,9 +2,13 @@ package com.google.firebase.codelab.friendlychat.models;
 
 import android.text.format.DateUtils;
 
+import com.google.firebase.database.Exclude;
+
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,16 +21,31 @@ public class Group {
     Long ts;
     String id;
     HashMap<String, String> usersImgs;
+    @Exclude
+    Date lastUpdatedDate;
+    @Exclude
+    String relativeTimeStamp;
 
     public Group() {
     }
 
-    public Date getLastUpdatedDate() {
-        return new Date(ts);
+    public Group(List<User> users, String id) {
+        super();
+        User user;
+        this.title = "";
+        this.usersImgs = new HashMap<>();
+        for (int i = 0; i < users.size(); i++) {
+            user = users.get(i);
+            this.usersImgs.put(user.getId(), user.photoUrl);
+            this.title += user.getName();
+        }
+        this.id = id;
+        setLastUpdatedDateWithCurrentTimeStamp();
     }
 
-    public void setLastUpdatedDate(Date lastUpdatedDate) {
-        this.ts = lastUpdatedDate.getTime();
+    public void setLastUpdatedDateWithCurrentTimeStamp() {
+        Date currentDate = new Date();
+        this.ts = currentDate.getTime();
     }
 
     public String getImageUrl(String currentUserID) {
@@ -41,6 +60,7 @@ public class Group {
         return "";
     }
 
+    @Exclude
     public String getRelativeTimeStamp() {
         return DateUtils.getRelativeTimeSpanString(ts,
                 System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
@@ -48,6 +68,16 @@ public class Group {
 
     public String getId() {
         return id;
+    }
+
+    public String sortedUserIDs() {
+        String sortedUsers[] = usersImgs.keySet().toArray(new String[usersImgs.keySet().size()]);
+        Arrays.sort(sortedUsers);
+        String tempSortedIds = "";
+        for (String s: sortedUsers) {
+            tempSortedIds += s;
+        }
+        return tempSortedIds;
     }
 
     public HashMap<String, String> getUsersImgs() {

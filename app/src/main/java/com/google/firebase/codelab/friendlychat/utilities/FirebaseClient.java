@@ -6,6 +6,7 @@ import android.util.Log;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.codelab.friendlychat.models.FriendlyMessage;
+import com.google.firebase.codelab.friendlychat.models.Group;
 import com.google.firebase.codelab.friendlychat.models.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -14,9 +15,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
-
-import static com.google.firebase.codelab.friendlychat.activities.IndividualChatActivity.MESSAGES_FOR_GROUP_NODE;
+import java.util.List;
 
 /**
  * Created by patelkev on 11/10/16.
@@ -28,6 +30,10 @@ public class FirebaseClient {
         public void  postSetupInterface();
     }
 
+    public interface FetchGroupsInterface {
+        public void fetchedGroups(ArrayList<Group> groups);
+    }
+
     public ArrayList<PostSetupInterface> postSetupInterfaces;
     private static final String TAG = FirebaseClient.class.getSimpleName();
     private FirebaseAuth mFirebaseAuth;
@@ -37,6 +43,7 @@ public class FirebaseClient {
     public static final String USERS_NODE = "users";
     public static final String GROUPS_FOR_USER_NODE = "groupsForUser";
     public static final String GROUPS_NODE= "groups";
+    public static final String MESSAGES_FOR_GROUP_NODE = "messagesForGroup";
     public String[] groupIdsForCurrentUser;
     public Boolean setupDone = false;
 
@@ -107,22 +114,79 @@ public class FirebaseClient {
         fetcher.fetchDataForAllReferences();
     }
 
-    public void getGroupsForCurrentUserIfSetupDone (final FirebaseUtils.FetchedMultiChildListener mGroupsListener) {
+    public void getGroupsForCurrentUserIfSetupDone (final FetchGroupsInterface mGroupsListener) {
+        final FirebaseUtils.FetchedMultiChildListener fetchedMultiChildListener = new FirebaseUtils.FetchedMultiChildListener() {
+            @Override
+            public void fetchedMultiListener(ArrayList<DataSnapshot> groupsSnapShot) {
+                ArrayList<Group> groups = new ArrayList<>();
+                for(int i = 0; i < groupsSnapShot.size(); i++) {
+                    groups.add(groupsSnapShot.get(i).getValue(Group.class));
+                }
+                mGroupsListener.fetchedGroups(groups);
+            }
+        };
         if (!setupDone) {
             postSetupInterfaces.add(new PostSetupInterface() {
                 @Override
                 public void postSetupInterface() {
-                    getGroupsForCurrentUser(mGroupsListener);
+                    getGroupsForCurrentUser(fetchedMultiChildListener);
                 }
             });
             return;
         }
-        getGroupsForCurrentUser(mGroupsListener);
+        getGroupsForCurrentUser(fetchedMultiChildListener);
     }
 
+    //KEVINTODO - Update Group with the latest time stamp and /groups/gid/[ts+lmSnippet]
+    //Add the Message to messagesForGroup node.
     public void sendMessageForGroup(String groupID, FriendlyMessage messageToSend) {
         mFirebaseDatabaseReference.child(MESSAGES_FOR_GROUP_NODE).child(groupID)
                 .push().setValue(messageToSend);
+        DatabaseReference groupReference = mFirebaseDatabaseReference.child(GROUPS_NODE).child(groupID);
+        groupReference.child("lmSnippet").setValue(messageToSend.getText());
+        groupReference.child("ts").setValue((new Date()).getTime());
+    }
+
+    public void createGroup(final List<User> users, final FetchGroupsInterface mFetchGroupsInterface) {
+        ArrayList<String> sortedList = new ArrayList<>();
+        for (int i = 0; i < users.size(); i++) {
+            sortedList.add(users.get(i).getId());
+        }
+        Collections.sort(sortedList);
+        String tempSortedIds = "";
+        for (String s: sortedList) {
+            tempSortedIds += s;
+        }
+        final String sortedIds = tempSortedIds;
+
+        getGroupsForCurrentUserIfSetupDone(new FetchGroupsInterface() {
+            @Override
+            public void fetchedGroups(ArrayList<Group> groups) {
+                Group group;
+                for (int i = 0; i < groups.size(); i++) {
+                    group = groups.get(i);
+                    if (group.sortedUserIDs().equals(sortedIds)) {
+                        // found existing group
+                        ArrayList<Group> retGroups = new ArrayList<Group>();
+                        retGroups.add(group);
+                        mFetchGroupsInterface.fetchedGroups(retGroups);
+                        return;
+                    }
+                }
+                // existing group not found create a group
+                DatabaseReference groupsRef = mFirebaseDatabaseReference.child(GROUPS_NODE);
+                DatabaseReference newGroupsRef = groupsRef.push();
+                group = new Group(users, newGroupsRef.getKey());
+                newGroupsRef.setValue(group);
+                DatabaseReference groupsForUserRef = mFirebaseDatabaseReference.child(GROUPS_FOR_USER_NODE);
+                for (int i = 0; i < users.size(); i++) {
+                    groupsForUserRef.child(users.get(i).getId()).child(group.getId()).setValue(true);
+                }
+                ArrayList<Group> retGroups = new ArrayList<Group>();
+                retGroups.add(group);
+                mFetchGroupsInterface.fetchedGroups(retGroups);
+            }
+        });
     }
 
     public FirebaseAuth getmFirebaseAuth() {

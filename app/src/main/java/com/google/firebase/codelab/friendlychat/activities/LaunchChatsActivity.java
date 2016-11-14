@@ -16,8 +16,7 @@ import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.codelab.friendlychat.adapters.LaunchChatsAdapter;
 import com.google.firebase.codelab.friendlychat.models.Group;
 import com.google.firebase.codelab.friendlychat.utilities.ChatApplication;
-import com.google.firebase.codelab.friendlychat.utilities.FirebaseUtils;
-import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.codelab.friendlychat.utilities.FirebaseClient;
 
 import java.util.ArrayList;
 
@@ -61,16 +60,22 @@ public class LaunchChatsActivity extends AppCompatActivity {
         mGroupsAdapter.updateGroups(new ArrayList<Group>());
         mGroupsAdapter.notifyDataSetChanged();
 
-        ChatApplication.getFirebaseClient().getGroupsForCurrentUserIfSetupDone(new FirebaseUtils.FetchedMultiChildListener() {
+        ChatApplication.getFirebaseClient().getGroupsForCurrentUserIfSetupDone(new FirebaseClient.FetchGroupsInterface() {
             @Override
-            public void fetchedMultiListener(ArrayList<DataSnapshot> groupsSnapShot) {
-                ArrayList<Group> groups = new ArrayList<>();
-                for(int i = 0; i < groupsSnapShot.size(); i++) {
-                    groups.add(groupsSnapShot.get(i).getValue(Group.class));
-                }
+            public void fetchedGroups(ArrayList<Group> groups) {
                 mGroupsAdapter.updateGroups(groups);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 200 && data != null) {
+            Intent i = new Intent(this , IndividualChatActivity.class);
+            i.putExtra(INTENT_GROUP_KEY, data.getStringExtra(INTENT_GROUP_KEY));
+            this.startActivity(i);
+        }
     }
 
     private void setFAB(){
@@ -82,7 +87,7 @@ public class LaunchChatsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(LaunchChatsActivity.this, ContactsListActivity.class);
-                startActivity(i);
+                startActivityForResult(i, 200);
             }
         });
     }

@@ -15,42 +15,54 @@
  */
 package com.google.firebase.codelab.friendlychat.models;
 
+import com.google.firebase.codelab.friendlychat.utilities.ChatApplication;
+import com.google.firebase.database.Exclude;
+
+import java.util.Date;
+
 public class FriendlyMessage {
 
-    private String text;
+    public enum MessageType {
+        Movie, Text, TicTacToe, BotText
+    }
+
     private String name;
     private String photoUrl;
+    private String sid;
+    private MessageType msgType;
+    private String payLoad;
+    private Long ts;
+
     /**
      * References the type of the message video/image/text
      */
-    private int type;
-
-    public String getJsonPayLoad() {
-        return jsonPayLoad;
+    public String getPayLoad() {
+        return payLoad;
     }
 
-    public void setJsonPayLoad(String jsonPayLoad) {
-        this.jsonPayLoad = jsonPayLoad;
+    public void setPayLoad(String jsonPayLoad) {
+        this.payLoad = jsonPayLoad;
     }
-
-    private String jsonPayLoad;
 
     public FriendlyMessage() {
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl) {
-        this.text = text;
+    public FriendlyMessage(String text, String name, String photoUrl, MessageType msgType) {
+        this.payLoad = text;
         this.name = name;
         this.photoUrl = photoUrl;
-
+        this.sid = ChatApplication.getFirebaseClient().getmFirebaseUser().getUid();;
+        this.msgType = msgType;
+        this.ts = (new Date()).getTime();
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    public FriendlyMessage(String text, String name, String photoUrl) {
+        this.payLoad = text;
+        this.name = name;
+        this.photoUrl = photoUrl;
+        this.msgType = MessageType.Text;
+        this.sid = ChatApplication.getFirebaseClient().getmFirebaseUser().getUid();
+        this.ts = (new Date()).getTime();
     }
 
     public String getName() {
@@ -69,8 +81,32 @@ public class FriendlyMessage {
         this.photoUrl = photoUrl;
     }
 
-    public int getType() {return type;}
+    public String getSid() {
+        return sid;
+    }
 
-    public void setType(int type) {this.type = type;}
+    public void setSid(String sid) {
+        this.sid = sid;
+    }
 
+    public String getMsgType() {
+        return msgType.name();
+    }
+
+    @Exclude
+    public MessageType getMsgTypeAsEnum() {
+        return msgType;
+    }
+
+    public void setMsgType(String msgType) {
+        this.msgType = MessageType.valueOf(msgType);
+    }
+
+    public Long getTs() {
+        return ts;
+    }
+
+    public void setTs(Long ts) {
+        this.ts = ts;
+    }
 }

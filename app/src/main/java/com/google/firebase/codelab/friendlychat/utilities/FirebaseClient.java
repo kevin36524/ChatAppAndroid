@@ -145,7 +145,7 @@ public class FirebaseClient {
         mFirebaseDatabaseReference.child(MESSAGES_FOR_GROUP_NODE).child(groupID)
                 .push().setValue(messageToSend);
         DatabaseReference groupReference = mFirebaseDatabaseReference.child(GROUPS_NODE).child(groupID);
-        groupReference.child("lmSnippet").setValue(messageToSend.getText());
+        groupReference.child("lmSnippet").setValue(messageToSend.getPayLoad());
         groupReference.child("ts").setValue((new Date()).getTime());
     }
 

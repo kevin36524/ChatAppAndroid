@@ -96,7 +96,7 @@ public class IndividualChatActivity extends AppCompatActivity
     public static final String INTENT_GROUP_KEY = "groupKey";
     private static final String TAG = "IndividualChatActivity";
     private static final int REQUEST_INVITE = 1;
-    public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
+    public static final int DEFAULT_MSG_LENGTH_LIMIT = 100;
     public static final String ANONYMOUS = "anonymous";
     private static final String MESSAGE_SENT_EVENT = "message_sent";
     private String mUsername;
@@ -180,7 +180,7 @@ public class IndividualChatActivity extends AppCompatActivity
             protected void populateViewHolder(final MessageViewHolder viewHolder,
                                               FriendlyMessage friendlyMessage, int position) {
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                viewHolder.messageTextView.setText(friendlyMessage.getText());
+                viewHolder.messageTextView.setText(friendlyMessage.getPayLoad());
                 viewHolder.messengerTextView.setText(friendlyMessage.getName());
                 if (friendlyMessage.getPhotoUrl() == null) {
                     viewHolder.messengerImageView
@@ -192,14 +192,18 @@ public class IndividualChatActivity extends AppCompatActivity
                             .load(friendlyMessage.getPhotoUrl())
                             .into(viewHolder.messengerImageView);
                 }
-                if (friendlyMessage.getJsonPayLoad() != null) {
+//                Gson gson = new GsonBuilder().create();
+//                gson.toJson(null);
+//                gson.fromJson("", Object.class);
+
+
+                if (friendlyMessage.getPayLoad() != null && friendlyMessage.getMsgTypeAsEnum() == FriendlyMessage.MessageType.Movie) {
                     viewHolder.trailerImageView.setVisibility(View.VISIBLE);
                     viewHolder.overlayImageView.setVisibility(View.VISIBLE);
                             Glide.with(IndividualChatActivity.this)
                             .load(trailer_poster_url)
                             .into(viewHolder.trailerImageView);
-                    trailerUrl=friendlyMessage.getJsonPayLoad();
-
+                    trailerUrl=friendlyMessage.getPayLoad();
                 }
             }
         };
@@ -250,6 +254,18 @@ public class IndividualChatActivity extends AppCompatActivity
             public void afterTextChanged(Editable editable) {
             }
         });
+        mMessageEditText.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                shouldAutoReply = !shouldAutoReply;
+                if (shouldAutoReply) {
+                    mMessageEditText.setHint("Eliza Bot Enabled!!");
+                } else {
+                    mMessageEditText.setHint("");
+                }
+                return true;
+            }
+        });
 
         mSendButton = (Button) findViewById(R.id.sendButton);
         mSendButton.setOnClickListener(new View.OnClickListener() {
@@ -260,7 +276,7 @@ public class IndividualChatActivity extends AppCompatActivity
                         mUsername,
                         mPhotoUrl);
                 if (trailerUrl != null) {
-                    friendlyMessage.setJsonPayLoad(trailerUrl);
+                    friendlyMessage = new FriendlyMessage(trailerUrl, mUsername, mPhotoUrl, FriendlyMessage.MessageType.Movie);
                     trailerUrl = null;
                 }
                 ChatApplication.getFirebaseClient().sendMessageForGroup(currentGroupID,friendlyMessage);
@@ -272,9 +288,9 @@ public class IndividualChatActivity extends AppCompatActivity
     public void sendAutoReplyForMessageAtIndex(int index) {
         if (lastIndex != null && lastIndex == index - 1 && shouldAutoReply) {
             FriendlyMessage message = mFirebaseAdapter.getItem(index);
-            if (!message.getPhotoUrl().equals(mFirebaseUser.getPhotoUrl())) {
-                String autoReplyText = ChatApplication.getAutoReplyClient().getResponseForText(message.getText());
-                FriendlyMessage newMessage = new FriendlyMessage(autoReplyText, mUsername, mPhotoUrl);
+            if (!message.getSid().equals(ChatApplication.getFirebaseClient().getmFirebaseUser().getUid())) {
+                String autoReplyText = ChatApplication.getAutoReplyClient().getResponseForText(message.getPayLoad());
+                FriendlyMessage newMessage = new FriendlyMessage(autoReplyText, mUsername, mPhotoUrl, FriendlyMessage.MessageType.BotText);
                 ChatApplication.getFirebaseClient().sendMessageForGroup(currentGroupID, newMessage);
             }
         }
@@ -297,8 +313,6 @@ public class IndividualChatActivity extends AppCompatActivity
             mSendButton.setEnabled(true);
             // Toast the name to display temporarily on screen
             Toast.makeText(this, "Video Added", Toast.LENGTH_SHORT).show();
-
-
         }
     }
 

@@ -62,6 +62,7 @@ public class Group {
 
     @Exclude
     public String getRelativeTimeStamp() {
+        setLastUpdatedDateWithCurrentTimeStamp();
         return DateUtils.getRelativeTimeSpanString(ts,
                 System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
     }

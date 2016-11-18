@@ -62,7 +62,6 @@ public class Group {
 
     @Exclude
     public String getRelativeTimeStamp() {
-        setLastUpdatedDateWithCurrentTimeStamp();
         return DateUtils.getRelativeTimeSpanString(ts,
                 System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
     }
@@ -95,5 +94,29 @@ public class Group {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getLmSnippet() {
+        return lmSnippet;
+    }
+
+    public void setLmSnippet(String lmSnippet) {
+        this.lmSnippet = lmSnippet;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Long getTs() {
+        return ts;
+    }
+
+    public void setTs(Long ts) {
+        this.ts = ts;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

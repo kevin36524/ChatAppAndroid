@@ -103,7 +103,7 @@ public class ContactsListActivity extends AppCompatActivity {
 
         rvContactList.setLayoutManager(mLinearLayoutManager);
         rvContactList.setAdapter(mFirebaseAdapter);
-    };
+    }
 
     public void finishActivityWithGroupID(String groupID) {
         Intent data = new Intent();

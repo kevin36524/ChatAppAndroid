@@ -1,0 +1,54 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    tools:context="com.google.firebase.codelab.friendlychat.fragments.TrailerFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            app:srcCompat="@mipmap/ic_launcher"
+            android:contentDescription="preview image"
+            android:id="@+id/ivPreview"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageView
+            android:id="@+id/ivOverlay1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/overlay_image"
+            android:src="@android:drawable/ic_media_play"
+            android:tint="@color/colorPrimaryDark"
+            android:visibility="invisible"
+            android:layout_below="@+id/ibCancelTrailer"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="33dp" />
+
+        <ImageButton
+
+            android:backgroundTint="#FC9"
+            android:tint="@color/colorPrimaryDark"
+            android:contentDescription="cancel"
+            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
+            android:id="@+id/ibCancelTrailer"
+            android:onClick="CancelPreview"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@color/background_white"
+            android:layout_marginEnd="35dp"
+            android:layout_alignEnd="@+id/ivPreview"
+            android:layout_alignParentTop="true" />
+
+</RelativeLayout>
+
+
+</FrameLayout>

@@ -16,7 +16,7 @@
         android:id="@+id/ivProfileImageContacts" />
 
     <TextView
-        android:text="Firstname Lastname"
+        tools:text="Firstname Lastname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/ivProfileImageContacts"
@@ -26,7 +26,7 @@
         android:id="@+id/tvNameContacts" />
 
     <TextView
-        android:text="Email"
+        tools:text="Email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tvNameContacts"

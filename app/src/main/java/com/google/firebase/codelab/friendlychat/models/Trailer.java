@@ -69,7 +69,6 @@ public class Trailer implements Serializable{
                 results.add(new Trailer(trailerArray.getJSONObject(x)));
             } catch (JSONException e) {
                 e.printStackTrace();
-                continue;
             }
         }
         return results;

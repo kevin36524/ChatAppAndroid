@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginTop="5dp"
 
     android:orientation="vertical"
@@ -11,7 +12,8 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:scaleType="centerCrop"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@mipmap/ic_launcher"
+        android:contentDescription="poster Image"/>
 
     <TextView
         android:id="@+id/tvTrailerTitle"
@@ -21,7 +23,7 @@
         android:ellipsize="marquee"
         android:gravity="center"
         android:maxLines="2"
-        android:text="sampletest"
+        tools:text="sampletest"
         android:textSize="12sp" />
 
 </LinearLayout>

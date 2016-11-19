@@ -10,8 +10,8 @@ import java.util.ArrayList;
  * Created by Disha on 10/20/2016.
  */
 public class Movie {
-    String posterPath;
-    String originalTitle;
+    private String posterPath;
+    private String originalTitle;
 
     public int getMovieId() {
         return movieId;
@@ -42,7 +42,6 @@ public class Movie {
                 results.add(new Movie(array.getJSONObject(x)));
             } catch (JSONException e) {
                 e.printStackTrace();
-                continue;
             }
         }
         return results;

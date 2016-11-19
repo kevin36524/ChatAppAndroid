@@ -20,6 +20,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,8 +35,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +52,8 @@ import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.codelab.friendlychat.R;
+import com.google.firebase.codelab.friendlychat.fragments.MovieFragment;
+import com.google.firebase.codelab.friendlychat.fragments.TrailerFragment;
 import com.google.firebase.codelab.friendlychat.models.FriendlyMessage;
 import com.google.firebase.codelab.friendlychat.utilities.ChatApplication;
 import com.google.firebase.codelab.friendlychat.utilities.CodelabPreferences;
@@ -60,61 +66,31 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.google.firebase.codelab.friendlychat.utilities.FirebaseClient.MESSAGES_FOR_GROUP_NODE;
 
 public class IndividualChatActivity extends AppCompatActivity
-        implements GoogleApiClient.OnConnectionFailedListener {
-    public static final String YT_API_KEY = "AIzaSyDBQycZ7fwrRNm2OBTd54X4k9wcwjNM5LE";
-    public android.app.FragmentManager fm = getFragmentManager();
-    private String trailer_poster_url;
-
-
-    public void onPlayVideo(View view) {
-
-        Toast.makeText(IndividualChatActivity.this, "Playing Video", Toast.LENGTH_SHORT).show();
-
-        Intent intent = YouTubeStandalonePlayer.createVideoIntent(
-                this, YT_API_KEY, trailerUrl,0,true,true);
-        startActivity(intent);
-
-    }
-
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
-        public TextView messageTextView;
-        public TextView messengerTextView;
-        public CircleImageView messengerImageView;
-        public ImageView trailerImageView;
-        public ImageView overlayImageView ;
-
-        public MessageViewHolder(View v) {
-            super(v);
-            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
-            messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
-            messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
-            trailerImageView = (ImageView) itemView.findViewById(R.id.ivTrailerLogo);
-            overlayImageView = (ImageView) itemView.findViewById(R.id.ivOverlay);
-        }
-    }
+        implements GoogleApiClient.OnConnectionFailedListener,
+        MovieFragment.OnFragmentInteractionListener,TrailerFragment.PreviewIFragmentnteractionListener {
 
     public static final String INTENT_GROUP_KEY = "groupKey";
     private static final String TAG = "IndividualChatActivity";
-    private static final int REQUEST_INVITE = 1;
+   // private static final int REQUEST_INVITE = 1;
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 100;
     public static final String ANONYMOUS = "anonymous";
-    private static final String MESSAGE_SENT_EVENT = "message_sent";
+   // private static final String MESSAGE_SENT_EVENT = "message_sent";
     private String mUsername;
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
-
     private String currentGroupID;
-
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private ProgressBar mProgressBar;
     private EditText mMessageEditText;
     private String trailerUrl;
-
     private Boolean shouldAutoReply;
     private Integer lastIndex;
+    private LinearLayout linearLayout;
+    private LinearLayout linearLayout_fragment;
+    private FrameLayout flMovieFragment;
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
@@ -128,11 +104,15 @@ public class IndividualChatActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //view initialisation for movie fragment
+        linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
+        linearLayout_fragment = (LinearLayout) findViewById(R.id.llFragment);
+        flMovieFragment = (FrameLayout) findViewById(R.id.flMovieFragment) ;
+
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         FirebaseCrash.log("OnCreateMethod");
         // Set default username is anonymous.
         mUsername = ANONYMOUS;
-
         this.shouldAutoReply = false;
         currentGroupID = getIntent().getStringExtra(INTENT_GROUP_KEY);
 
@@ -201,8 +181,8 @@ public class IndividualChatActivity extends AppCompatActivity
                     viewHolder.trailerImageView.setVisibility(View.VISIBLE);
                     viewHolder.overlayImageView.setVisibility(View.VISIBLE);
                             Glide.with(IndividualChatActivity.this)
-                            .load(trailer_poster_url)
-                            .into(viewHolder.trailerImageView);
+                            .load(trailer_poster_url).fitCenter().centerCrop().
+                            into(viewHolder.trailerImageView);
                     trailerUrl=friendlyMessage.getPayLoad();
                 }
             }
@@ -275,6 +255,7 @@ public class IndividualChatActivity extends AppCompatActivity
                         FriendlyMessage(mMessageEditText.getText().toString(),
                         mUsername,
                         mPhotoUrl);
+                CancelPreview(view);
                 if (trailerUrl != null) {
                     friendlyMessage = new FriendlyMessage(trailerUrl, mUsername, mPhotoUrl, FriendlyMessage.MessageType.Movie);
                     trailerUrl = null;
@@ -284,6 +265,31 @@ public class IndividualChatActivity extends AppCompatActivity
             }
         });
     }
+
+
+    @Override
+    public void onPreviewFragmentInteraction() {
+    }
+
+    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+        public TextView messageTextView;
+        public TextView messengerTextView;
+        public CircleImageView messengerImageView;
+        public ImageView trailerImageView;
+        public ImageView overlayImageView ;
+
+
+        public MessageViewHolder(View v) {
+            super(v);
+            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
+            messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
+            messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
+            //image view for movie trailer
+            trailerImageView = (ImageView) itemView.findViewById(R.id.ivTrailerLogo);
+            overlayImageView = (ImageView) itemView.findViewById(R.id.ivOverlay);
+        }
+    }
+
 
     public void sendAutoReplyForMessageAtIndex(int index) {
         if (lastIndex != null && lastIndex == index - 1 && shouldAutoReply) {
@@ -296,25 +302,99 @@ public class IndividualChatActivity extends AppCompatActivity
         }
         lastIndex = index;
     }
-
-    public void onAddTrailor(View view) {
-        Intent myIntent = new Intent(view.getContext(), TrailerGridViewActivity.class);
-        startActivityForResult(myIntent, 0);
-    }
+    public static final String YT_API_KEY = "AIzaSyDBQycZ7fwrRNm2OBTd54X4k9wcwjNM5LE";
+    private String trailer_poster_url;
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // REQUEST_CODE is defined above
+    public void onFragmentInteraction(int requestCode, int resultCode, Intent intent) {
+
         if (resultCode == RESULT_OK && requestCode == 0) {
             // Extract name value from result extras
-            trailerUrl = data.getExtras().getString("trailerUrl");
-            trailer_poster_url = data.getExtras().getString("posterPath");
+            trailerUrl = intent.getExtras().getString("trailerUrl");
+            trailer_poster_url = intent.getExtras().getString("posterPath");
 
             mSendButton.setEnabled(true);
             // Toast the name to display temporarily on screen
             Toast.makeText(this, "Video Added", Toast.LENGTH_SHORT).show();
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+            ft.replace(R.id.flMovieFragmentPreview, TrailerFragment.newInstance(trailerUrl,trailer_poster_url),"preview");
+            ft.commit();
+            CancelTrailers(this.getCurrentFocus());
+
         }
     }
+
+
+
+
+    public void onPlayVideo(View view) {
+
+        Toast.makeText(IndividualChatActivity.this, "Playing Video", Toast.LENGTH_SHORT).show();
+        Intent intent = YouTubeStandalonePlayer.createVideoIntent(
+                this, YT_API_KEY, trailerUrl,0,true,true);
+        startActivity(intent);
+
+    }
+
+    public void onAddTrailor(View view) {
+        //reset linear layout
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) linearLayout.getLayoutParams();
+        lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        lp.addRule(RelativeLayout.CENTER_VERTICAL);
+        lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM,0);
+       // lp.removeRule(layout_alignParentBottom);
+        linearLayout.setLayoutParams(lp);
+        //reset fragment layout
+        RelativeLayout.LayoutParams lpf = (RelativeLayout.LayoutParams) linearLayout_fragment.getLayoutParams();
+        lpf.addRule(RelativeLayout.ALIGN_PARENT_TOP,0);
+        lpf.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        linearLayout_fragment.setLayoutParams(lpf);
+
+        // Begin the transaction
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+// Replace the contents of the container with the new fragment
+        ft.replace(R.id.flMovieFragment, new MovieFragment(),"movies");
+// Complete the changes added above
+        ft.commit();
+
+    }
+
+    public void CancelTrailers(View view) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.remove(getSupportFragmentManager().findFragmentByTag("movies"));
+        ft.commit();
+
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) linearLayout.getLayoutParams();
+        lp.addRule(RelativeLayout.CENTER_HORIZONTAL,0);
+        lp.addRule(RelativeLayout.CENTER_VERTICAL,0);
+        lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        linearLayout.setLayoutParams(lp);
+    }
+
+    public void CancelPreview(View view){
+        if(getSupportFragmentManager().findFragmentByTag("preview") != null){
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+            ft.remove(getSupportFragmentManager().findFragmentByTag("preview"));
+            ft.commit();
+        }
+    }
+
+    public void ExpandTrailerView(View view) {
+
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) linearLayout.getLayoutParams();
+        lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM,0);
+        linearLayout.setLayoutParams(lp);
+
+        RelativeLayout.LayoutParams lpf = (RelativeLayout.LayoutParams) linearLayout_fragment.getLayoutParams();
+        lpf.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        lpf.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        linearLayout_fragment.setLayoutParams(lpf);
+        }
+
+
 
     @Override
     public void onStart() {

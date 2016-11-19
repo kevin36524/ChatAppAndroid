@@ -51,7 +51,7 @@ public class FriendlyMessage {
         this.payLoad = text;
         this.name = name;
         this.photoUrl = photoUrl;
-        this.sid = ChatApplication.getFirebaseClient().getmFirebaseUser().getUid();;
+        this.sid = ChatApplication.getFirebaseClient().getmFirebaseUser().getUid();
         this.msgType = msgType;
         this.ts = (new Date()).getTime();
     }

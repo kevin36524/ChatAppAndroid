@@ -28,7 +28,7 @@
             android:textSize="20sp"
             android:textColor="#FFA500"
             android:layout_weight="4"
-            android:text="Contacts"/>
+            android:text="@string/contacts"/>
 
 
         <ImageButton

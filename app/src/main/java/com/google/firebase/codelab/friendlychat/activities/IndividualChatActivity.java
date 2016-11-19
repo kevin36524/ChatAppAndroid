@@ -48,7 +48,8 @@ import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.codelab.friendlychat.R;
-import com.google.firebase.codelab.friendlychat.models.FriendlyMessage;
+import com.google.firebase.codelab.friendlychat.chatPlugins.Movie.activities.TrailerGridViewActivity;
+import com.google.firebase.codelab.friendlychat.models.ChatMessage;
 import com.google.firebase.codelab.friendlychat.utilities.ChatApplication;
 import com.google.firebase.codelab.friendlychat.utilities.CodelabPreferences;
 import com.google.firebase.crash.FirebaseCrash;
@@ -120,7 +121,7 @@ public class IndividualChatActivity extends AppCompatActivity
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mFirebaseDatabaseReference;
-    private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
+    private FirebaseRecyclerAdapter<ChatMessage, MessageViewHolder>
             mFirebaseAdapter;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
@@ -169,27 +170,27 @@ public class IndividualChatActivity extends AppCompatActivity
 
         // New child entries
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage,
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<ChatMessage,
                 MessageViewHolder>(
-                FriendlyMessage.class,
+                ChatMessage.class,
                 R.layout.item_message,
                 MessageViewHolder.class,
                 mFirebaseDatabaseReference.child(MESSAGES_FOR_GROUP_NODE).child(currentGroupID)) {
 
             @Override
             protected void populateViewHolder(final MessageViewHolder viewHolder,
-                                              FriendlyMessage friendlyMessage, int position) {
+                                              ChatMessage chatMessage, int position) {
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                viewHolder.messageTextView.setText(friendlyMessage.getPayLoad());
-                viewHolder.messengerTextView.setText(friendlyMessage.getName());
-                if (friendlyMessage.getPhotoUrl() == null) {
+                viewHolder.messageTextView.setText(chatMessage.getPayLoad());
+                viewHolder.messengerTextView.setText(chatMessage.getName());
+                if (chatMessage.getPhotoUrl() == null) {
                     viewHolder.messengerImageView
                             .setImageDrawable(ContextCompat
                                     .getDrawable(IndividualChatActivity.this,
                                             R.drawable.ic_account_circle_black_36dp));
                 } else {
                     Glide.with(IndividualChatActivity.this)
-                            .load(friendlyMessage.getPhotoUrl())
+                            .load(chatMessage.getPhotoUrl())
                             .into(viewHolder.messengerImageView);
                 }
 //                Gson gson = new GsonBuilder().create();
@@ -197,13 +198,13 @@ public class IndividualChatActivity extends AppCompatActivity
 //                gson.fromJson("", Object.class);
 
 
-                if (friendlyMessage.getPayLoad() != null && friendlyMessage.getMsgTypeAsEnum() == FriendlyMessage.MessageType.Movie) {
+                if (chatMessage.getPayLoad() != null && chatMessage.getMsgTypeAsEnum() == ChatMessage.MessageType.Movie) {
                     viewHolder.trailerImageView.setVisibility(View.VISIBLE);
                     viewHolder.overlayImageView.setVisibility(View.VISIBLE);
                             Glide.with(IndividualChatActivity.this)
                             .load(trailer_poster_url)
                             .into(viewHolder.trailerImageView);
-                    trailerUrl=friendlyMessage.getPayLoad();
+                    trailerUrl= chatMessage.getPayLoad();
                 }
             }
         };
@@ -271,15 +272,15 @@ public class IndividualChatActivity extends AppCompatActivity
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FriendlyMessage friendlyMessage = new
-                        FriendlyMessage(mMessageEditText.getText().toString(),
+                ChatMessage chatMessage = new
+                        ChatMessage(mMessageEditText.getText().toString(),
                         mUsername,
                         mPhotoUrl);
                 if (trailerUrl != null) {
-                    friendlyMessage = new FriendlyMessage(trailerUrl, mUsername, mPhotoUrl, FriendlyMessage.MessageType.Movie);
+                    chatMessage = new ChatMessage(trailerUrl, mUsername, mPhotoUrl, ChatMessage.MessageType.Movie, false);
                     trailerUrl = null;
                 }
-                ChatApplication.getFirebaseClient().sendMessageForGroup(currentGroupID,friendlyMessage);
+                ChatApplication.getFirebaseClient().sendMessageForGroup(currentGroupID, chatMessage);
                 mMessageEditText.setText("");
             }
         });
@@ -287,10 +288,10 @@ public class IndividualChatActivity extends AppCompatActivity
 
     public void sendAutoReplyForMessageAtIndex(int index) {
         if (lastIndex != null && lastIndex == index - 1 && shouldAutoReply) {
-            FriendlyMessage message = mFirebaseAdapter.getItem(index);
-            if (!message.getSid().equals(ChatApplication.getFirebaseClient().getmFirebaseUser().getUid())) {
+            ChatMessage message = mFirebaseAdapter.getItem(index);
+            if (!message.getSid().equals(ChatApplication.getFirebaseClient().getmFirebaseUser().getUid()) && !message.getBotMessage()) {
                 String autoReplyText = ChatApplication.getAutoReplyClient().getResponseForText(message.getPayLoad());
-                FriendlyMessage newMessage = new FriendlyMessage(autoReplyText, mUsername, mPhotoUrl, FriendlyMessage.MessageType.BotText);
+                ChatMessage newMessage = new ChatMessage(autoReplyText, mUsername, mPhotoUrl, ChatMessage.MessageType.Text, true);
                 ChatApplication.getFirebaseClient().sendMessageForGroup(currentGroupID, newMessage);
             }
         }

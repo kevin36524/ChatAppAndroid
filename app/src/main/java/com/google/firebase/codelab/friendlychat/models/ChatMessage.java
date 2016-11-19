@@ -20,10 +20,10 @@ import com.google.firebase.database.Exclude;
 
 import java.util.Date;
 
-public class FriendlyMessage {
+public class ChatMessage {
 
     public enum MessageType {
-        Movie, Text, TicTacToe, BotText
+        Movie, Text, TicTacToe
     }
 
     private String name;
@@ -31,6 +31,7 @@ public class FriendlyMessage {
     private String sid;
     private MessageType msgType;
     private String payLoad;
+    private Boolean isBotMessage;
     private Long ts;
 
     /**
@@ -44,19 +45,20 @@ public class FriendlyMessage {
         this.payLoad = jsonPayLoad;
     }
 
-    public FriendlyMessage() {
+    public ChatMessage() {
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl, MessageType msgType) {
+    public ChatMessage(String text, String name, String photoUrl, MessageType msgType, Boolean isBotMessage) {
         this.payLoad = text;
         this.name = name;
         this.photoUrl = photoUrl;
         this.sid = ChatApplication.getFirebaseClient().getmFirebaseUser().getUid();;
         this.msgType = msgType;
+        this.isBotMessage = isBotMessage;
         this.ts = (new Date()).getTime();
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl) {
+    public ChatMessage(String text, String name, String photoUrl) {
         this.payLoad = text;
         this.name = name;
         this.photoUrl = photoUrl;
@@ -108,5 +110,13 @@ public class FriendlyMessage {
 
     public void setTs(Long ts) {
         this.ts = ts;
+    }
+
+    public Boolean getBotMessage() {
+        return isBotMessage;
+    }
+
+    public void setBotMessage(Boolean botMessage) {
+        isBotMessage = botMessage;
     }
 }

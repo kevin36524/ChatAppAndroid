@@ -1,4 +1,4 @@
-package com.google.firebase.codelab.friendlychat.models;
+package com.google.firebase.codelab.friendlychat.chatPlugins.Movie.model;
 
 import org.json.JSONArray;
 import org.json.JSONException;

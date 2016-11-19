@@ -21,7 +21,7 @@
         </activity>
         <activity android:name=".activities.ContactsListActivity"/>
         <activity android:name=".activities.LaunchChatsActivity"/>
-        <activity android:name=".activities.TrailerGridViewActivity">
+        <activity android:name=".chatPlugins.Movie.activities.TrailerGridViewActivity">
         </activity>
     </application>
 

@@ -2,6 +2,8 @@ package com.google.firebase.codelab.friendlychat.utilities;
 
 import android.app.Application;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 /**
  * Created by patelkev on 11/10/16.
@@ -27,6 +29,16 @@ public class ChatApplication extends Application {
 
     public static FirebaseClient getFirebaseClient() {
         return (FirebaseClient) FirebaseClient.getInstance();
+    }
+
+    public static Boolean isNetworkReachable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if ((activeNetworkInfo != null)&&(activeNetworkInfo.isConnected())){
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

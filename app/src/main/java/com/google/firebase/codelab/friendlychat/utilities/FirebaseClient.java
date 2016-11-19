@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.codelab.friendlychat.models.FriendlyMessage;
+import com.google.firebase.codelab.friendlychat.models.ChatMessage;
 import com.google.firebase.codelab.friendlychat.models.Group;
 import com.google.firebase.codelab.friendlychat.models.User;
 import com.google.firebase.database.DataSnapshot;
@@ -141,7 +141,7 @@ public class FirebaseClient {
         getGroupsForCurrentUser(fetchedMultiChildListener);
     }
 
-    public void sendMessageForGroup(String groupID, FriendlyMessage messageToSend) {
+    public void sendMessageForGroup(String groupID, ChatMessage messageToSend) {
         mFirebaseDatabaseReference.child(MESSAGES_FOR_GROUP_NODE).child(groupID)
                 .push().setValue(messageToSend);
         DatabaseReference groupReference = mFirebaseDatabaseReference.child(GROUPS_NODE).child(groupID);
